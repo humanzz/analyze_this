@@ -6,19 +6,33 @@ require 'json'
 require 'timeout'
 
 get "/analyze_this" do
+  puts request.env.inspect
   if params[:url]
-    Timeout::timeout(4) do
-	  #TODO pass the request headers
-      p = HTMLPageData.get(params[:url])
-      {:error => false, :title => p.title, :description => p.description,
+    #Timeout::timeout(4) do
+      p = HTMLPageData.get(params[:url], browser_headers)
+      json = {:error => false, :title => p.title, :description => p.description,
        :keywords => p.keywords, :host => p.host}.to_json  
-    end
+    #end
   else
-    {:error => true, :message => "Care to provide a url?"}.to_json
+    json = {:error => true, :message => "Care to provide a url?"}.to_json
   end
+  wrap_response json
 end
 
 error do
-  puts ">>>>>>>>>>#{request.env['sinatra.error']}"
-  {:error => true, :message => "There was an error with your request"}.to_json
+  #puts ">>>>>>>>>>#{request.env['sinatra.error']}"
+  wrap_response({:error => true, :message => "There was an error with your request"}.to_json)
+end
+
+def browser_headers
+  headers = {}
+  ['User-Agent', 'Accept-Language', 'Accept-Charset'].each do |h|
+    header_key = "HTTP_#{h.gsub("-","_")}".upcase
+    headers[h] = request.env[header_key] if request.env[header_key]
+  end
+  headers
+end
+
+def wrap_response(json)
+  params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
