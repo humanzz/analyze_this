@@ -1,12 +1,19 @@
-$:.unshift File.join(File.dirname(__FILE__),'lib')
+#requires
 require 'rubygems'
 require 'sinatra'
-require 'html_page_data'
 require 'json'
 require 'timeout'
 
+#neverblock
+require 'neverblock'
+require 'neverblock-io'
+require 'never_block/servers/thin'
+
+#lib
+$:.unshift File.join(File.dirname(__FILE__),'lib')
+require 'html_page_data'
+
 get "/analyze_this" do
-  puts request.env.inspect
   if params[:url]
     #Timeout::timeout(4) do
       p = HTMLPageData.get(params[:url], browser_headers)

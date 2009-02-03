@@ -86,7 +86,7 @@ class HTMLPageData
     end
     unless @document_encoding
       document.css("meta[http-equiv=Content-Type]").each do |n|
-        content = n.get_attribute("content")
+        attr = n.get_attribute("content")
         @document_encoding = attr.slice(/charset=[a-z1-9\-_]+/i).split("=")[1].upcase if attr
       end
     end
@@ -106,7 +106,6 @@ class HTMLPageData
     
     Net::HTTP.new(url.host, url.port).start do |http|
       http.request_get(url.request_uri) do |res|
-        puts res.inspect
         response = res
         if res.is_a?(Net::HTTPSuccess)
           raise HTMLPageDataError.new("Invalid Content-Type #{res['Content-Type']}") if !self.class::ContentTypes.include? res.content_type
