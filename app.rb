@@ -5,9 +5,9 @@ require 'json'
 require 'timeout'
 
 #neverblock
-require 'neverblock'
-require 'neverblock-io'
-require 'never_block/servers/thin'
+#require 'neverblock'
+#require 'neverblock-io'
+#require 'never_block/servers/thin'
 
 #lib
 $:.unshift File.join(File.dirname(__FILE__),'lib')

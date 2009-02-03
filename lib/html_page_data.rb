@@ -105,7 +105,8 @@ class HTMLPageData
     response = nil
     
     Net::HTTP.new(url.host, url.port).start do |http|
-      http.request_get(url.request_uri) do |res|
+      http.request_get(url.request_uri, @headers) do |res|
+        puts res.inspect
         response = res
         if res.is_a?(Net::HTTPSuccess)
           raise HTMLPageDataError.new("Invalid Content-Type #{res['Content-Type']}") if !self.class::ContentTypes.include? res.content_type
@@ -137,7 +138,7 @@ class HTMLPageData
   	@headers = self.class::DefaultHeaders.merge(headers)
   	#enforece the html or xhtml types only    
     #@headers['Accept'] = self.class::ContentTypes.join(",")
-    @headers['Accept'] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    @headers['Accept'] = "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8"
   end
   
   def handle_special_cases(response, limit)
