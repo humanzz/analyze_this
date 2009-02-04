@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Analyze This!</title>
+  <script type="text/javascript" src="/javascripts/jquery.js"></script>
+  <script type="text/javascript" src="/javascripts/json2.js"></script>
+</head>
+
+<body>
+<h1>Analyze This!</h1>
+<p>
+  Enter url<br />
+  <input type="text" id="url" style="width:600px;"/>
+  <input type="button" id="button" value="Go"/>
+</p>
+
+<h2>Analyze This</h2>
+<textarea id="analyze_this" style="width:640px;height:200px;"></textarea>
+
+<h2>oohEmbed</h2>
+<textarea id="oohembed" style="width:640px;height:200px;"></textarea>
+
+<script type="text/javascript">
+  var analyze_this = function(json){
+    $('#analyze_this').html(JSON.stringify(json));
+  };
+  
+  var oohembed = function(json){
+    $('#oohembed').html(JSON.stringify(json));
+  };
+  
+  $(document).ready(function(){
+    $('#button').click(function(){
+      var url = encodeURIComponent($('#url')[0].value);
+      $('<script>').attr('type','text/javascript').attr('src','/analyze_this?callback=analyze_this&url='+url).appendTo('body');
+      $('<script>').attr('type','text/javascript').attr('src','http://www.oohembed.com/oohembed?callback=oohembed&url='+url).appendTo('body');      
+    });
+  });
+</script>
+</body>

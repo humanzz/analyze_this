@@ -41,5 +41,10 @@ def browser_headers
 end
 
 def wrap_response(json)
-  params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
+  response['Content-Type'] = "application/json"
+  if params[:callback]
+    json = "#{params[:callback]}(#{json})"
+    response['Content-Type'] = "application/javascript"
+  end
+  json
 end
