@@ -1,0 +1,20 @@
+Analyze This is a solution to the problem of trying to preview a link from within a browser - like facebook's "share a link" feature.
+
+oEmbed and oohEmbed try to solve the problem of a how a url should be represented on a page. For example, if it's a flickr photo url,
+the thumbnail can be shown, if the url is a youtube video, a player should be embedded and so on. The problem with oEmbed and oohEmbed
+is that the list of supported websites is limited.
+
+Analyze This on the other hand tends to handle webpages in a generic way by providing data that is common on all web pages.
+That is: title, description, keywords, and images list.
+
+Given a webpage's url, the application returns a JSON object representing the webpage's info.
+The application uses JSONP so that the caller can provide a callback function.
+
+Example
+-------
+Say that we're running this application at http://www.analyzethis.com/ and we have another application at http://www.another.com,
+A page on another.com gives the user the option to enter a url and preview it.
+That page doesn't want to bother its server with that and it needs to use a remote service for that. Due to cross site AJAX limitations,
+the page can't call the analyzethis.com service directly. It has to do so via a script tag and it provides a callback function.
+
+<script type="text/javascript" src="http://www.analyzethis.com/analyze_this?url=SOME_URL"></script>
