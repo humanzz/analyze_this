@@ -34,6 +34,18 @@ class HTMLPageData
     @url.host
   end
   
+  def favicon
+    return @favicon if @favicon
+    href = document.css("link[rel*=icon]", "link[rel*=ICON]").first
+    if href
+      @favicon = href.get_attribute('href')
+      @favicon = "#{@url.scheme}://#{@url.host}/#{@favicon.gsub(/^\//,'')}" unless @favicon =~ /^#{@url.scheme}/
+    else
+      @favicon = "#{@url.scheme}://#{@url.host}/favicon.ico"
+    end
+    @favicon
+  end
+  
   def title
     if @title.nil? && document
       document.css("title", "meta[name=title]").each {|n| @title = n.get_attribute("content").nil? ? clean_text(n.inner_html) : clean_text(n.get_attribute("content"))}
