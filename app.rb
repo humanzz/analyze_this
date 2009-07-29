@@ -35,11 +35,11 @@ end
 def get_page(params)
   #require 'neverblock/core/system/timeout' unless defined? Timeout
   begin
-    #Timeout::timeout(3) do
+    Timeout::timeout(3) do
       p = HTMLPageData.get(params[:url])
       #p = HTMLPageData.get(params[:url], browser_headers)
       return p, false, ""
-    #end
+    end
   rescue Timeout::Error => e
     return nil, true, "The request is taking too long"
   rescue URI::InvalidURIError => e
