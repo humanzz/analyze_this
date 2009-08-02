@@ -1,5 +1,4 @@
-Analyze This
-============
+= Analyze This
 
 Analyze This is a solution to the problem of trying to preview a link from within a browser - like facebook's "share a link" feature.
 
@@ -11,23 +10,24 @@ That is: title, description, keywords, and images list.
 Given a webpage's url, the application returns a JSON object representing the webpage's info.
 The application uses JSONP so that the caller can provide a callback function.
 
-Web UI
-------
+
+== Web UI
 
 The web UI is more for fun and showing what the application can do
 
-API
----
+
+== API
 
 The API is accessible at http://analyzethis.espace-technologies.com/js and all you need to provide it with is url parameter and an optional callback if you need it. For example, a page requesting information about a URL provided in an input#url can use the following code snippet
 
-    $(document).ready(function(){
-      $('#button').click(function(){
-      var url = encodeURIComponent($('#url')[0].value);
-      $('<script>').attr('type','text/javascript').attr('src','http://analyzethis.espace-technologies.com/js?callback=analyze_this&url='+url).appendTo('body');
-      });
+  $(document).ready(function(){
+    $('#button').click(function(){
+    var url = encodeURIComponent($('#url')[0].value);
+    $('<script>').attr('type','text/javascript').attr('src','http://analyzethis.espace-technologies.com/js?callback=analyze_this&url='+url).appendTo('body');
     });
+  });
 
 which would result in a call to the javascript function analyze_this({..}) passing in a JSON object that has the page’s info.
 
 Analyze This is available at http://analyzethis.espace-technologies.com
+
