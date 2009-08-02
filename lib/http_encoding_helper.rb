@@ -25,7 +25,7 @@
 require 'zlib'
 require 'stringio'
 
-class Net::HTTPResponse
+class Net::HTTPResponse #:nodoc:
   # Return the uncompressed content
   def plain_body
     encoding=self['content-encoding']

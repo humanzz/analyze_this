@@ -7,6 +7,7 @@ class HTMLPageDataError < StandardError
 end
 
 class HTMLPageData
+  # Faking Firefox headers for better information
   DefaultHeaders = {'User-Agent'=>'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11',
                     'Accept-Language'=> 'en-us,en;q=0.5',
                     'Accept-Charset'=> 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
@@ -15,6 +16,7 @@ class HTMLPageData
   ContentLengthLimit =  1048576
   ContentTypes = ['text/html','application/xhtml+xml']
 
+  # Gets the page information
   def self.get(url, headers = {})
     p = self.new(url, headers)
     p.response
@@ -32,6 +34,8 @@ class HTMLPageData
     @url.host
   end
   
+  # Gets the page favicon. It tries to get the favicon from its link tag if possible.
+  # If not found it assumes a default favicon
   def favicon
     return @favicon if @favicon
     href = document.css("link[rel*=icon]", "link[rel*=ICON]").first
@@ -44,6 +48,7 @@ class HTMLPageData
     @favicon
   end
   
+  # Gets the page's title. Meta title has higher priority than the title tag
   def title
     if @title.nil? && document
       document.css("title", "meta[name=title]").each {|n| @title = n.get_attribute("content").nil? ? clean_text(n.inner_html) : clean_text(n.get_attribute("content"))}
@@ -51,6 +56,7 @@ class HTMLPageData
     @title||=""
   end
   
+  # Gets the page's keywords from the meta keywords tag
   def keywords
     if @keywords.nil? && document
       document.css("meta[name=keywords]").each {|n| @keywords = n.get_attribute("content").blank? ? [] : n.get_attribute("content").split(",").collect {|k|clean_text(k.strip)}}
@@ -58,6 +64,7 @@ class HTMLPageData
     @keywords||=[]
   end
   
+  # Gets the page's description from the meta description tag
   def description
     if @description.nil? && document
       document.css("meta[name=description]").each {|n| @description = n.get_attribute("content").blank? ? "" : clean_text(n.get_attribute("content").strip)}
@@ -65,6 +72,7 @@ class HTMLPageData
     @description||=""
   end
   
+  # Gets all images sources
   def image_sources
     if @images.nil? && document
       @images = []
@@ -80,11 +88,11 @@ class HTMLPageData
     @images
   end
   
-    def response
+  def response #:nodoc:
     @response ||= fetch(@url.to_s)
   end
   
-  def document
+  def document #:nodoc:
     if @document.nil? && response
       @document = if document_encoding
                     Nokogiri::HTML(response.body.force_encoding(document_encoding).encode('utf-8'),nil, 'utf-8')
@@ -95,16 +103,12 @@ class HTMLPageData
     @document
   end
   
-  def document_encoding
+  def document_encoding #:nodoc:
     return @document_encoding if @document_encoding
     response.type_params.each_pair do |k,v|
       @document_encoding = v.upcase if k =~ /charset/i
     end
     unless @document_encoding
-      #document.css("meta[http-equiv=Content-Type]").each do |n|
-      #  attr = n.get_attribute("content")
-      #  @document_encoding = attr.slice(/charset=[a-z1-9\-_]+/i).split("=")[1].upcase if attr
-      #end
       @document_encoding = response.body =~ /<meta[^>]*HTTP-EQUIV=["']Content-Type["'][^>]*content=["'](.*)["']/i && $1 =~ /charset=(.+)/i && $1.upcase
     end
     @document_encoding
