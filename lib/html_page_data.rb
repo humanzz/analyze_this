@@ -1,9 +1,7 @@
 require 'helpers'
 require 'net/http'
 require 'cgi'
-require 'http_encoding_helper'
 require 'nokogiri'
-require 'iconv'
 
 class HTMLPageDataError < StandardError
 end
@@ -87,7 +85,13 @@ class HTMLPageData
   end
   
   def document
-    @document = Nokogiri::HTML(response.plain_body) if @document.nil? && response
+    if @document.nil? && response
+      @document = if document_encoding
+                    Nokogiri::HTML(response.body.force_encoding(document_encoding).encode('utf-8'),nil, 'utf-8')
+                  else
+                    Nokogiri::HTML(response.body)
+                  end
+    end
     @document
   end
   
@@ -97,17 +101,18 @@ class HTMLPageData
       @document_encoding = v.upcase if k =~ /charset/i
     end
     unless @document_encoding
-      document.css("meta[http-equiv=Content-Type]").each do |n|
-        attr = n.get_attribute("content")
-        @document_encoding = attr.slice(/charset=[a-z1-9\-_]+/i).split("=")[1].upcase if attr
-      end
+      #document.css("meta[http-equiv=Content-Type]").each do |n|
+      #  attr = n.get_attribute("content")
+      #  @document_encoding = attr.slice(/charset=[a-z1-9\-_]+/i).split("=")[1].upcase if attr
+      #end
+      @document_encoding = response.body =~ /<meta[^>]*HTTP-EQUIV=["']Content-Type["'][^>]*content=["'](.*)["']/i && $1 =~ /charset=(.+)/i && $1.upcase
     end
     @document_encoding
   end  
   
-  ######
+  #######
   private
-  ######
+  #######
   
   def fetch(uri_str, limit = 10)
     # You should choose better exception.
@@ -118,7 +123,7 @@ class HTMLPageData
     
     Net::HTTP.new(url.host, url.port).start do |http|
       http.request_get(url.request_uri, @headers) do |res|
-        puts res.inspect
+        #puts res.inspect
         response = res
         if res.is_a?(Net::HTTPSuccess)
           raise HTMLPageDataError.new("Invalid Content-Type #{res['Content-Type']}") if !self.class::ContentTypes.include? res.content_type
@@ -155,17 +160,14 @@ class HTMLPageData
   
   def handle_special_cases(response, limit)
     #for handling image search on yahoo and google
-    matches = response.plain_body.scan(/<noscript>.*<meta[^>]*HTTP-EQUIV=["']refresh["'][^>]*content=["']\d;url=([^"']+)["'][^>]*>/i)
+    matches = response.body.scan(/<noscript>.*<meta[^>]*HTTP-EQUIV=["']refresh["'][^>]*content=["']\d;url=([^"']+)["'][^>]*>/i)
     return response if matches.length == 0
     url = (matches.collect {|m| m[0]})[0]
     return fetch(url, limit - 1)
   end
   
   def clean_text(html)
-    if html
-      html = CGI::unescapeHTML(html).gsub(/(\r|\n)/,"").strip
-      Iconv.conv('UTF-8', document_encoding, html) if document_encoding && document_encoding != "UTF-8"
-    end
+    html = CGI::unescapeHTML(html).gsub(/(\r|\n)/,"").strip if html
     html
   end
 end
