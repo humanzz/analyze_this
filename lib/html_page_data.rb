@@ -55,7 +55,7 @@ class HTMLPageData
   # Gets the page's title. Meta title has higher priority than the title tag
   def title
     if @title.nil? && document
-      document.css("title", "meta[name=title]").each {|n| @title = n.get_attribute("content").nil? ? clean_text(n.inner_html) : clean_text(n.get_attribute("content"))}
+      document.css("meta[name=title]","title").each {|n| @title = n.get_attribute("content").blank? ? clean_text(n.inner_html) : clean_text(n.get_attribute("content"))}
     end
     @title||=""
   end
@@ -131,7 +131,7 @@ class HTMLPageData
     
     Net::HTTP.new(url.host, url.port).start do |http|
       http.request_get(url.request_uri, @headers) do |res|
-        #puts res.inspect
+        puts res.inspect
         response = res
         if res.is_a?(Net::HTTPSuccess)
           raise HTMLPageDataError.new("Invalid Content-Type #{res['Content-Type']}") if !self.class::ContentTypes.include? res.content_type
