@@ -1,10 +1,10 @@
-class String #:nodoc: all
+class String #:nodoc:
   def blank?
     self == ""
   end
 end
 
-class NilClass #:nodoc: all
+class NilClass #:nodoc:
   def blank?
     true
   end

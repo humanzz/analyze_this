@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Analyze This</title>
+  <link href="/stylesheets/main.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="/javascripts/jquery.js"></script>
+  <script type="text/javascript" src="/javascripts/jcarousellite.js"></script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrapper">
+      <div id="header" <%='style="margin-top:-253px"' if params[:url]%> >
+        <div id="headerLeft"></div>
+        <div id="logo"><a href="/">Analyze This!</a></div>
+        <form method="get" id="url_form">
+        <div id="analyzeForm">          
+          <% input_message = "Enter url to analyze" %>
+          <input name="url" type="text" id="inputURL" class="inputURL" value="<%= params[:url] ? params[:url] : input_message %>" />
+          <a class="submitButton" href="javascript:void(0);" id="url_submit">analyze</a>
+        </div>
+        <a class="showHideButton show" href="javascript:void(0);" <%= 'style="display:none;"' if !params[:url]%>>show</a>
+        <a class="showHideButton hide" href="javascript:void(0);" <%= 'style="display:none;"' if params[:url]%>>hide</a>
+        </form>
+      </div>
+      <div id="content">
+        <div id="contentLeft"></div>
+        <%= yield %>
+      </div>
+      <div id="footer">
+        <div id="footerLeft"></div>
+      	  <span>&copy; 2009 Analyze This! All rights reserved. </span>
+          <span class="neverblock"><a href="http://www.espace.com.eg/neverblock" title="NeverBlock"><img src="/images/neverblock.png" /></a></span>
+        </div>
+        <div id="footerTail">
+        	<div id="contentLeft"></div>
+        	<span class="espace">A product by <a href="http://www.espace.com.eg" title="eSpace for software development"><img src="/images/espace.png" /></a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script type="text/javascript">
+  var inputMessage = "<%=input_message%>";
+  $(document).ready(function(){
+    $('input#inputURL').focus(function(){
+      if(this.value == inputMessage){
+        this.value = '';
+      }
+    });
+    $('input#inputURL').blur(function(){
+      if(this.value.length == 0){
+        this.value = inputMessage;
+      }
+    });
+    $('#url_submit').click(function(){
+      $('#url_form').submit();
+    });    
+    $(".carousel").jCarouselLite({
+      visible: 6,
+      circular: false,
+      btnNext: ".nextButt",
+      btnPrev: ".prevButt"
+    }); 
+    $(".carousel li").css("height", "auto");    
+    
+		$("#url_form").submit(function(){
+			$("#header").animate({marginTop:"-253px"},500);
+			$("a.showHideButton.show").show();
+		});		
+		
+		$("a.showHideButton.show").click(function(){
+			$("#header").animate({marginTop:"0px"},500);
+			$("a.showHideButton.show").hide();
+			$("a.showHideButton.hide").show();
+		});
+		
+		$("a.showHideButton.hide").click(function(){
+			$("#header").animate({marginTop:"-253px"},500);
+			$("a.showHideButton.hide").hide();
+			$("a.showHideButton.show").show();
+		});
+  });
+</script>
+</html>

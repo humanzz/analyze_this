@@ -1,0 +1,51 @@
+<% if error && message && message.length > 0%>
+  <div class="message"><%=message%></div>
+<% end %>
+
+<% if p %>
+  <% if p.title.length > 0 %>
+  <div class="box">
+    <h2>Title</h2>
+    <div class="boxContent"><img src="<%=p.favicon%>"/> <%=p.title%></div>
+  </div>
+  <% end %>
+  
+  <% if p.description.length > 0 %>
+  <div class="box">
+    <h2>Description</h2>
+    <div class="boxContent"><%=p.description%></div>
+  </div>  
+  <% end %>
+  
+  <% if p.keywords.length > 0 %>
+  <div class="box">
+    <h2>Keywords</h2>
+    <div class="boxContent"><%=p.keywords.join(", ")%></div>
+  </div>
+  <% end %>
+  
+  <% if p.image_sources.length > 0 %>
+  <div class="box">
+    <h2>Images</h2>
+    <div class="boxContent">
+    </div>
+  </div>
+  
+        <div class="carousel">
+        <ul>
+        <% p.image_sources.each do |src| %>
+          <li><img src="<%=src%>" /></li>
+        <% end %>
+        </ul>
+      </div>
+      <div class="imagesButts"><a class="prevButt" href="javascript:void(0);">&laquo; previous</a><a class="nextButt" href="javascript:void(0);">next &raquo;</a></div>
+  <script type="text/javascript>
+    $(document).ready(function(){
+      $(".carousel").jCarouselLite({
+        btnNext: ".nextButt",
+        btnPrev: ".prevButt"
+      });      
+    });
+  </script>  
+  <% end %>
+<% end %>

@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'haml'
 require 'sinatra'
 require 'json'
 
@@ -7,13 +6,20 @@ require 'json'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'html_page_data'
 
-get "/" do
+#TODO protect urself by not allowing calling urself !!
+
+set :public, 'public'
+
+before do
   content_type 'text/html', :charset => 'utf-8'
+end
+
+get "/" do
   if params[:url]
     p, error, message = get_page(params)
-    haml :index, :locals =>{:p => p, :url => params[:url], :error => error, :message => message}
+    erb :show, :locals =>{:p => p, :url => params[:url], :error => error, :message => message}
   else
-    haml :index, :locals => {:url => "", :error => false}
+    erb :show, :locals => {:url => "", :error => false}
   end
 end
 
@@ -22,7 +28,8 @@ get "/js" do
     p, error, message = get_page(params)
     if !error
       json = {:error => false, :title => p.title, :description => p.description,
-              :keywords => p.keywords, :host => p.host, :favicon => p.favicon}.to_json
+              :keywords => p.keywords, :host => p.host, :favicon => p.favicon,
+              :images => p.image_sources}.to_json
     else
       json = {:error => error, :message => message}.to_json
     end
@@ -66,30 +73,3 @@ def wrap_response(json)
   end
   json
 end
-
-use_in_file_templates!
-
-__END__
-
-@@ layout
-!!! 1.1
-%html
-  %head
-    %title Analyze This!
-    %link{:rel => 'stylesheet', :href => 'http://www.w3.org/StyleSheets/Core/Modernist', :type => 'text/css'}  
-  = yield
-  
-@@ index
-%form{:method=>'get'}
-  %h1.title Analyze This!
-  %input{:type=>'text', :name=>'url', :value => url}
-  %input{:type=>'submit', :value=>'submit'}
-- if error
-  %h2 Error!
-  %p=message
-- if p  
-  %h2
-    %img{:src=>p.favicon}
-    =p.title
-  %h3= p.description
-  %h4= p.keywords.join(", ")

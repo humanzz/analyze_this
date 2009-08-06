@@ -30,6 +30,10 @@ class HTMLPageData
     init_headers(headers)
   end
   
+  def url
+    @url
+  end
+  
   def host
     @url.host
   end
@@ -158,7 +162,6 @@ class HTMLPageData
   	#faking some header so as to act like a normal browser unless otherwise given
   	@headers = self.class::DefaultHeaders.merge(headers)
   	#enforece the html or xhtml types only    
-    #@headers['Accept'] = self.class::ContentTypes.join(",")
     @headers['Accept'] = "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8"
   end
   
@@ -171,7 +174,6 @@ class HTMLPageData
   end
   
   def clean_text(html)
-    html = CGI::unescapeHTML(html).gsub(/(\r|\n)/,"").strip if html
-    html
+    html ? CGI::unescapeHTML(html).gsub(/(\r|\n)/,"").strip : html
   end
 end
