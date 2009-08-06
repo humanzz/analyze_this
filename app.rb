@@ -42,7 +42,7 @@ end
 def get_page(params)
   require 'neverblock/core/system/timeout' unless defined? Timeout
   begin
-    Timeout::timeout(3) do
+    Timeout::timeout(5) do
       p = HTMLPageData.get(params[:url])
       #p = HTMLPageData.get(params[:url], browser_headers)
       return p, false, ""
