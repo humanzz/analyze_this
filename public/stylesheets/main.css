@@ -18,6 +18,7 @@ body{background-color:#e6e6e6;font-family:Arial, Helvetica, sans-serif;font-size
 #analyzeForm{float:left;display:inline;margin:265px 0 0 90px;height:75px;width:675px;}
 /* 3387b6 */
 #analyzeForm .inputURL{background-color:transparent;color:#d7f1ff;font-size:28px;padding:20px 0 0;width:450px;text-shadow:1px 2px 4px #114969;font-family:arial;height:50px;float:left;display:inline;}
+#analyzeForm .inputURL.dimmed{text-shadow:none;color:#3387b6;}
 #analyzeForm a.submitButton{float:right;display:inline;width:170px;height:73px;background:transparent url(/images/analizeButtonSp.png) no-repeat 0 -73px;text-indent:-2500px;margin:0 30px 0 0;}
 #analyzeForm a.submitButton:hover{background-position:0 0;}
 

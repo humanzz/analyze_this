@@ -19,7 +19,7 @@
         <form method="get" id="url_form">
         <div id="analyzeForm">          
           <% input_message = "Enter url to analyze" %>
-          <input name="url" type="text" id="inputURL" class="inputURL" value="<%= params[:url] ? params[:url] : input_message %>" />
+          <input name="url" type="text" id="inputURL" class="inputURL<%=" dimmed" unless params[:url]%>" value="<%= params[:url] ? params[:url] : input_message %>" />
           <a class="submitButton" href="javascript:void(0);" id="url_submit">analyze</a>
         </div>
         <a class="showHideButton show" href="javascript:void(0);" <%= 'style="display:none;"' if !params[:url]%>>show</a>
@@ -51,11 +51,13 @@
     $('input#inputURL').focus(function(){
       if(this.value == inputMessage){
         this.value = '';
+        $(this).removeClass("dimmed");
       }
     });
     $('input#inputURL').blur(function(){
       if(this.value.length == 0){
         this.value = inputMessage;
+        $(this).addClass("dimmed");
       }
     });
     $('#url_submit').click(function(){
