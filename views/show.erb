@@ -5,7 +5,7 @@
 <% if p %>
   <div class="box">
     <h2>URL</h2>
-    <div class="boxContent"><img src="<%=p.favicon%>"/><%=p.url.to_s%></div>
+    <div class="boxContent"><img src="<%=p.favicon%>"/><a href="<%=p.url.to_s%>"><%=p.url.to_s%></a></div>
   </div>
   <% if p.title.length > 0 %>
   <div class="box">
