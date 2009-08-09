@@ -82,9 +82,12 @@ class HTMLPageData
       @images = []
       document.css("img").each do |n|
         unless n.get_attribute("src").blank?
-          img_src = URI.parse(n.get_attribute("src"))
-          img_src = @url.merge(img_src).to_s unless img_src.absolute?  
-          @images << img_src.to_s
+          begin
+            img_src = URI.parse(n.get_attribute("src"))
+            img_src = @url.merge(img_src).to_s unless img_src.absolute?          
+            @images << img_src.to_s
+          rescue Exception
+          end
         end
       end
       @images = @images.uniq
