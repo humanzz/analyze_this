@@ -6,53 +6,56 @@ require 'json'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'html_page_data'
 
-#TODO protect urself by not allowing calling urself !!
-
 set :public, 'public'
 
 before do
-  content_type 'text/html', :charset => 'utf-8'
+  # Set proper content type
+  if request.path == "/js"
+    if params[:callback]
+      content_type 'application/javascript', :charset => 'utf-8'
+    else
+      content_type 'application/json', :charset => 'utf-8'
+    end
+  else
+    content_type 'text/html', :charset => 'utf-8'
+  end
 end
 
 get "/" do
   if params[:url]
-    p, error, message = get_page(params)
-    erb :show, :locals =>{:p => p, :url => params[:url], :error => error, :message => message}
+    p = get_page(params)
+    erb :show, :locals =>{:p => p, :url => params[:url], :error => false}
   else
     erb :show, :locals => {:url => "", :error => false}
   end
 end
 
 get "/js" do
-  if params[:url]
-    p, error, message = get_page(params)
-    if !error
-      json = {:error => false, :title => p.title, :description => p.description,
-              :keywords => p.keywords, :host => p.host, :favicon => p.favicon,
-              :images => p.image_sources}.to_json
-    else
-      json = {:error => error, :message => message}.to_json
-    end
-  else
-    json = {:error => true, :message => "Care to provide a url?"}.to_json
-  end
+  p = get_page(params)
+  json = {:error => false, :title => p.title, :description => p.description,
+          :keywords => p.keywords, :host => p.host, :favicon => p.favicon,
+          :images => p.image_sources}.to_json
   wrap_response json
+end
+
+error(Timeout::Error) {render_error("The request is taking too long!")}
+error(URI::InvalidURIError) {render_error("The URL provided is invalid!")}
+error {render_error("An error has occured!")}
+
+def render_error(message)
+  if request.path == "/js"
+    wrap_response({:error => true, :message =>message}.to_json)
+  else
+    erb :show, :locals =>{:url => params[:url], :error => true, :message => message}
+  end
 end
 
 def get_page(params)
   require 'neverblock/core/system/timeout' unless defined? Timeout
-  begin
-    Timeout::timeout(5) do
-      p = HTMLPageData.get(params[:url])
-      #p = HTMLPageData.get(params[:url], browser_headers)
-      return p, false, ""
-    end
-  rescue Timeout::Error => e
-    return nil, true, "The request is taking too long"
-  rescue URI::InvalidURIError => e
-    return nil, true, "The URL provided is invalid"
-  rescue Exception
-    return nil, true, "An error has occured while trying to process the url"
+  Timeout::timeout(5) do
+    p = HTMLPageData.get(params[:url])
+    #p = HTMLPageData.get(params[:url], browser_headers)
+    return p
   end
 end
 
@@ -65,11 +68,7 @@ def browser_headers
   headers
 end
  
-def wrap_response(json)
-  response['Content-Type'] = "application/json"
-  if params[:callback]
-    json = "#{params[:callback]}(#{json})"
-    response['Content-Type'] = "application/javascript"
-  end
+def wrap_response(json)      
+  json = "#{params[:callback]}(#{json})" if params[:callback]
   json
 end
