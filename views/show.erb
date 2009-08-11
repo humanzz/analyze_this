@@ -32,14 +32,11 @@
   <div class="box boxImages">
     <h2>Images</h2>
     <div class="boxContent">
-      <div class="imagesContainer carousel">
-        <ul>
+      <div class="imagesContainer">
         <% p.image_sources.each do |src| %>
-          <li><a href="<%=src%>" target="_blank"<img src="<%=src%>" /></a></li>
+          <a href="<%=src%>" target="_blank"<img src="<%=src%>" /></a>
         <% end %>
-        </ul>
       </div>
-      <div class="imagesButts"><a class="prevButt" href="javascript:void(0);">&laquo; previous</a><a class="nextButt" href="javascript:void(0);">next &raquo;</a></div>
     </div>
   </div>
   <% end %>

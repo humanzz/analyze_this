@@ -2,10 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="analyze,this,title,description,keywords,images,favicon" />
+	<meta name="description" content="Analyze This! is a simple service that allows you to pull information about any webpage that you've provided the URL for, retrieving the page's title, favicon, description, keywords and images." />
   <title>Analyze This</title>
   <link href="/stylesheets/main.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="/javascripts/jquery.js"></script>
-  <script type="text/javascript" src="/javascripts/jcarousellite.js"></script>
+  <script type="text/javascript" src="/javascripts/jquery.masonry.js"></script>
 </head>
 
 <body>
@@ -62,15 +64,8 @@
     });
     $('#url_submit').click(function(){
       $('#url_form').submit();
-    });    
-    $(".carousel").jCarouselLite({
-      visible: 6,
-      circular: false,
-      btnNext: ".nextButt",
-      btnPrev: ".prevButt"
-    }); 
-    $(".carousel li").css("height", "auto");    
-    
+    });
+    $('.imagesContainer').masonry();
 		$("#url_form").submit(function(){
 			$("#header").animate({marginTop:"-253px"},500);
 			$("a.showHideButton.show").show();
